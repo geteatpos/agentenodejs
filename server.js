@@ -8,9 +8,10 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-app.post('/incoming-call', async (req, res) => {
+app.post('/incoming-call', (req, res) => {
     const twiml = new twilio.twiml.VoiceResponse();
     twiml.say("Hola, bienvenido al restaurante. ¿Cómo puedo ayudarle?");
+    
     res.type('text/xml');
     res.send(twiml.toString());
 });
