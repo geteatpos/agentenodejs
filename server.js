@@ -17,7 +17,7 @@ app.post('/media-stream', (req, res) => {
     try {
         const twiml = new twilio.twiml.VoiceResponse();
         const stream = twiml.connect().stream({
-            url: 'wss://your-render-url.onrender.com/ws', // ⚠️ REEMPLAZA con la URL real de Render
+            url: 'wss://agentenodejs.onrender.com/ws', // ⚠️ REEMPLAZA con la URL real de Render
         });
 
         console.log("📡 Enviando TwiML a Twilio...");
