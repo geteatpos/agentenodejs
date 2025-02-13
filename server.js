@@ -6,6 +6,7 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegStatic = require('ffmpeg-static');
+const axios = require('axios');
 
 require('dotenv').config();
 
@@ -16,20 +17,25 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+// 🔹 Verificar API Keys antes de iniciar
 if (!process.env.OPENAI_API_KEY) {
-    console.error("❌ ERROR: OPENAI_API_KEY no está configurada en las variables de entorno.");
-    process.exit(1); // Detener ejecución si falta la clave
+    console.error("❌ ERROR: OPENAI_API_KEY no está configurada.");
+    process.exit(1);
+}
+
+if (!process.env.ELEVENLABS_API_KEY) {
+    console.error("❌ ERROR: ELEVENLABS_API_KEY no está configurada.");
+    process.exit(1);
 }
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-
-// 🔹 Almacenar los datos de audio
+// 🔹 Almacenar datos de audio en tiempo real
 let audioBuffer = Buffer.alloc(0);
 
-// 🟢 WebSocket para Twilio Media Streams
+// 🟢 WebSocket para recibir audio en tiempo real de Twilio
 wss.on('connection', (ws) => {
     console.log("🔗 Conexión WebSocket establecida con Twilio Media Stream");
 
@@ -40,38 +46,52 @@ wss.on('connection', (ws) => {
 
     ws.on('close', async () => {
         console.log("🔌 Conexión WebSocket cerrada, procesando audio...");
-        
+
         if (audioBuffer.length > 0) {
             console.log(`🔍 Tamaño del audio recibido: ${audioBuffer.length} bytes`);
-    
-            // Guarda el audio recibido para verificarlo
+
+            // Guardar el audio temporalmente
             const rawAudioPath = './audio.raw';
             fs.writeFileSync(rawAudioPath, audioBuffer);
             console.log(`✅ Audio guardado en ${rawAudioPath}`);
-    
-            // Intenta convertirlo con ffmpeg
+
+            // Convertir a WAV
             const wavAudioPath = './audio.wav';
-    
+
             ffmpeg()
-                .setFfmpegPath(ffmpegStatic) // Asegurar que usa la versión correcta de FFmpeg
+                .setFfmpegPath(ffmpegStatic)
                 .input(rawAudioPath)
                 .inputFormat('mulaw') // Twilio envía audio en formato mu-law
-                .outputOptions('-ar 16000') // Convertir a 16 kHz para Whisper
+                .outputOptions([
+                    '-ar 16000', // Convertir a 16 kHz
+                    '-ac 1', // Canal mono
+                    '-b:a 128k', // Calidad de audio alta
+                    '-f wav'
+                ])
                 .output(wavAudioPath)
                 .on('start', (cmd) => console.log(`▶ Ejecutando FFmpeg: ${cmd}`))
                 .on('error', (err) => console.error("❌ Error en FFmpeg:", err))
                 .on('end', async () => {
                     console.log("🎧 Audio convertido, enviando a Whisper...");
-    
+
                     try {
+                        // Transcribir el audio con Whisper
                         const transcription = await openai.audio.transcriptions.create({
                             file: fs.createReadStream(wavAudioPath),
                             model: "whisper-1",
+                            language: "es", // Cambiar a "en" si es inglés
+                            response_format: "text"
                         });
-    
+
                         console.log("📝 Transcripción:", transcription.text);
-    
-                        // 🔹 Eliminar archivos temporales
+
+                        // 🔥 Generar respuesta en voz con Eleven Labs
+                        const respuestaAudio = await generarAudioElevenLabs(transcription.text);
+                        if (respuestaAudio) {
+                            console.log(`📢 Respuesta generada en: ${respuestaAudio}`);
+                        }
+
+                        // Limpiar archivos temporales
                         fs.unlinkSync(rawAudioPath);
                         fs.unlinkSync(wavAudioPath);
                     } catch (error) {
@@ -83,12 +103,42 @@ wss.on('connection', (ws) => {
             console.error("❌ No se recibió audio válido.");
         }
     });
-    
 
     ws.on('error', (err) => {
         console.error("❌ Error en WebSocket:", err);
     });
 });
+
+// 🔹 Función para generar respuesta en voz con Eleven Labs
+async function generarAudioElevenLabs(texto) {
+    console.log("🎙️ Generando audio con Eleven Labs...");
+
+    try {
+        const response = await axios.post(
+            'https://api.elevenlabs.io/v1/text-to-speech/YOUR_VOICE_ID', // ⚠️ Reemplaza con tu Voice ID
+            {
+                text: texto,
+                voice_settings: { stability: 0.5, similarity_boost: 0.7 }
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'xi-api-key': process.env.ELEVENLABS_API_KEY
+                },
+                responseType: 'arraybuffer'
+            }
+        );
+
+        const respuestaAudioPath = './respuesta.mp3';
+        fs.writeFileSync(respuestaAudioPath, response.data);
+        console.log("✅ Audio generado y guardado como respuesta.mp3");
+
+        return respuestaAudioPath;
+    } catch (error) {
+        console.error("❌ Error generando audio en Eleven Labs:", error);
+        return null;
+    }
+}
 
 // 🔹 Ruta para recibir Twilio Media Stream
 app.post('/media-stream', (req, res) => {
@@ -109,7 +159,7 @@ app.post('/media-stream', (req, res) => {
     }
 });
 
-// 🔹 Escuchamos en el mismo servidor
+// 🔹 Escuchar en el mismo servidor Express
 server.listen(PORT, () => {
     console.log(`🚀 Servidor Express y WebSocket corriendo en http://localhost:${PORT}`);
 });
