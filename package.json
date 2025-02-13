@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/geteatpos/agentenodejs#readme",
   "dependencies": {
+    "@google-cloud/speech": "^6.7.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
