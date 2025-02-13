@@ -16,9 +16,15 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+if (!process.env.OPENAI_API_KEY) {
+    console.error("❌ ERROR: OPENAI_API_KEY no está configurada en las variables de entorno.");
+    process.exit(1); // Detener ejecución si falta la clave
+}
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
+
 
 // 🔹 Almacenar los datos de audio
 let audioBuffer = Buffer.alloc(0);
