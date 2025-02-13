@@ -115,7 +115,7 @@ async function generarAudioElevenLabs(texto) {
 
     try {
         const response = await axios.post(
-            'https://api.elevenlabs.io/v1/text-to-speech/YOUR_VOICE_ID', // ⚠️ Reemplaza con tu Voice ID
+            'https://api.elevenlabs.io/v1/text-to-speech/2qEjXpSVHAkqHEoF1x8h', // ⚠️ Reemplaza con tu Voice ID
             {
                 text: texto,
                 voice_settings: { stability: 0.5, similarity_boost: 0.7 }
@@ -131,7 +131,7 @@ async function generarAudioElevenLabs(texto) {
 
         const respuestaAudioPath = './respuesta.mp3';
         fs.writeFileSync(respuestaAudioPath, response.data);
-        console.log("✅ Audio generado y guardado como respuesta.mp3");
+        console.log("✅ Audio generado y GUARDADO POR MI  como respuesta.mp3");
 
         return respuestaAudioPath;
     } catch (error) {
