@@ -42,37 +42,48 @@ wss.on('connection', (ws) => {
         console.log("🔌 Conexión WebSocket cerrada, procesando audio...");
         
         if (audioBuffer.length > 0) {
+            console.log(`🔍 Tamaño del audio recibido: ${audioBuffer.length} bytes`);
+    
+            // Guarda el audio recibido para verificarlo
             const rawAudioPath = './audio.raw';
-            const wavAudioPath = './audio.wav';
-
             fs.writeFileSync(rawAudioPath, audioBuffer);
-
-            // 🔹 Convertir audio a WAV (formato aceptado por Whisper)
+            console.log(`✅ Audio guardado en ${rawAudioPath}`);
+    
+            // Intenta convertirlo con ffmpeg
+            const wavAudioPath = './audio.wav';
+    
             ffmpeg()
+                .setFfmpegPath(ffmpegStatic) // Asegurar que usa la versión correcta de FFmpeg
                 .input(rawAudioPath)
-                .outputOptions('-f wav')
-                .save(wavAudioPath)
+                .inputFormat('mulaw') // Twilio envía audio en formato mu-law
+                .outputOptions('-ar 16000') // Convertir a 16 kHz para Whisper
+                .output(wavAudioPath)
+                .on('start', (cmd) => console.log(`▶ Ejecutando FFmpeg: ${cmd}`))
+                .on('error', (err) => console.error("❌ Error en FFmpeg:", err))
                 .on('end', async () => {
-                    console.log("🎧 Audio Jose convertido, enviando a Whisper...");
-
+                    console.log("🎧 Audio convertido, enviando a Whisper...");
+    
                     try {
                         const transcription = await openai.audio.transcriptions.create({
                             file: fs.createReadStream(wavAudioPath),
                             model: "whisper-1",
                         });
-
+    
                         console.log("📝 Transcripción:", transcription.text);
-
+    
                         // 🔹 Eliminar archivos temporales
                         fs.unlinkSync(rawAudioPath);
                         fs.unlinkSync(wavAudioPath);
-
                     } catch (error) {
                         console.error("❌ Error en la transcripción:", error);
                     }
-                });
+                })
+                .run();
+        } else {
+            console.error("❌ No se recibió audio válido.");
         }
     });
+    
 
     ws.on('error', (err) => {
         console.error("❌ Error en WebSocket:", err);
