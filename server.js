@@ -33,7 +33,7 @@ app.post("/webhook", (req, res) => {
           prompt:
             "The customer's bank account balance is $100. They are based in San Francisco.",
         },
-        first_message: "Hi, {customer_name} how can I help you today?",
+        first_message: `Hi, ${customer_name} how can I help you today?`,
       },
     },
   };
