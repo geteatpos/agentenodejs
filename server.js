@@ -1,20 +1,20 @@
-import Fastify from "fastify";
+const fastify = require("fastify")({ logger: true });
 
-const fastify = Fastify({ logger: true });
-
-fastify.post("/twilio-webhook", async (request, reply) => {
+// Define the webhook endpoint
+fastify.post("/webhook", async (request, reply) => {
+  // Extract data from the request body
   const { caller_id, agent_id, called_number, call_sid } = request.body;
 
-  // Simulate fetching dynamic variables from a database or other service
-  const dynamicVariables = {
-    customer_name: "John Doe",
-    account_status: "premium",
-    last_interaction: "2024-01-15",
-  };
+  // Log the received data (optional)
+  fastify.log.info({ caller_id, agent_id, called_number, call_sid });
 
-  // Construct the response
-  const responsePayload = {
-    dynamic_variables: dynamicVariables,
+  // Prepare the response data
+  const responseData = {
+    dynamic_variables: {
+      customer_name: "John Doe",
+      account_status: "premium",
+      last_interaction: "2024-01-15",
+    },
     conversation_config_override: {
       agent: {
         prompt: {
@@ -30,13 +30,15 @@ fastify.post("/twilio-webhook", async (request, reply) => {
     },
   };
 
-  reply.send(responsePayload);
+  // Send the JSON response
+  return reply.send(responseData);
 });
 
+// Start the server
 const start = async () => {
   try {
-    await fastify.listen({ port: 3000, host: "0.0.0.0" });
-    console.log("Server running on port 3000");
+    await fastify.listen({ port: 3000 });
+    fastify.log.info(`Server listening on http://localhost:3000`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
