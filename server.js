@@ -1,31 +1,20 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import Fastify from "fastify";
 
-const app = express();
-const port = 3000;
+const fastify = Fastify({ logger: true });
 
-// Middleware para parsear JSON
-app.use(bodyParser.json());
+fastify.post("/twilio-webhook", async (request, reply) => {
+  const { caller_id, agent_id, called_number, call_sid } = request.body;
 
-// Endpoint del webhook
-app.post("/webhook", (req, res) => {
-  console.log("Datos recibidos de Twilio:", req.body);
-
-  // Extrae los datos de la llamada
-  const { caller_id, agent_id, called_number, call_sid } = req.body;
-
-  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
-  const customerData = {
+  // Simulate fetching dynamic variables from a database or other service
+  const dynamicVariables = {
     customer_name: "John Doe",
     account_status: "premium",
     last_interaction: "2024-01-15",
   };
 
-  // Prepara la respuesta para ElevenLabs
-  const response = {
-    dynamic_variables: {
-      ...customerData,
-    },
+  // Construct the response
+  const responsePayload = {
+    dynamic_variables: dynamicVariables,
     conversation_config_override: {
       agent: {
         prompt: {
@@ -41,13 +30,17 @@ app.post("/webhook", (req, res) => {
     },
   };
 
-  console.log("Respuesta enviada a ElevenLabs:", response);
-
-  // Envía la respuesta JSON
-  res.json(response);
+  reply.send(responsePayload);
 });
 
-// Inicia el servidor
-app.listen(port, () => {
-  console.log(`Servidor webhook escuchando en http://localhost:${port}`);
-});
+const start = async () => {
+  try {
+    await fastify.listen({ port: 3000, host: "0.0.0.0" });
+    console.log("Server running on port 3000");
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
+
+start();
