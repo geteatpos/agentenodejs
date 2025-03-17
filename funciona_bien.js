@@ -16,27 +16,27 @@ app.post("/webhook", (req, res) => {
 
 	// Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
 	const customerData = {
-    customer_name: "John Doe",
-    called_number: called_number,
-    last_interaction: "2024-01-15",
-    caller_id: caller_id,
-  };
+		customer_name: "John Doe",
+		called_number: called_number,
+		last_interaction: "2024-01-15",
+		caller_id: caller_id,
+	};
 
 	// Prepara la respuesta para ElevenLabs
 	const response = {
-    dynamic_variables: {
-      ...customerData,
-    },
-    conversation_config_override: {
-      agent: {
-        prompt: {
-          prompt:
-            `pregunta si este es su numero de telefono ${customerData.caller_id}`,
-        },
-        first_message: `Hi, Como estas ${customerData.customer_name} en que puedo ayudarte hoy?`,
-      },
-    },
-  };
+		dynamic_variables: {
+			...customerData,
+		},
+		conversation_config_override: {
+			agent: {
+				prompt: {
+					prompt:
+						"The customer's bank account balance is $100. They are based in San Francisco.",
+				},
+				first_message: `Hi, ${customerData.customer_name} how can I help you today?`,
+			},
+		},
+	};
 
 	console.log("Respuesta enviada a ElevenLabs:", response);
 
