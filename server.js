@@ -22,11 +22,9 @@ fastify.post("/webhook", async (request, reply) => {
             "The customer's bank account balance is $100. They are based in San Francisco.",
         },
         first_message: "Hi, how can I help you today?",
-        language: "en",
+
       },
-      tts: {
-        voice_id: "cgSgspJ2msm6clMCkdW9",
-      },
+     
     },
   };
 
