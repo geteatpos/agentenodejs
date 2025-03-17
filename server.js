@@ -25,7 +25,7 @@ fastify.post("/webhook", async (request, reply) => {
         language: "en",
       },
       tts: {
-        voice_id: "new-voice-id",
+        voice_id: "cgSgspJ2msm6clMCkdW9",
       },
     },
   };
