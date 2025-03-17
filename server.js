@@ -1,18 +1,31 @@
-const fastify = require("fastify")({ logger: true });
+const express = require("express");
+const bodyParser = require("body-parser");
 
-// Define the webhook endpoint
-fastify.post("/get-personal", async (request, reply) => {
-  console.log("Datos recibidos de Twilio:", request.body);
-  // Extract data from the request body
-  const { caller_id, agent_id, called_number, call_sid } = request.body;
+const app = express();
+const port = 3000;
 
-  // Prepare the response data
-  const responseData = {
-		dynamic_variables: {
-			numero:   called_number,
-      customer_name: "Alpidio Doe",
-      account_status: "premium",
-      last_interaction: "2024-01-15",
+// Middleware para parsear JSON
+app.use(bodyParser.json());
+
+// Endpoint del webhook
+app.post("/webhook", (req, res) => {
+	console.log("Datos recibidos de Twilio:", req.body);
+
+	// Extrae los datos de la llamada
+	const { caller_id, agent_id, called_number, call_sid } = req.body;
+
+	// Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
+	const customerData = {
+    customer_name: "John Doe",
+    called_number: called_number,
+    last_interaction: "2024-01-15",
+    caller_id: caller_id,
+  };
+
+	// Prepara la respuesta para ElevenLabs
+	const response = {
+    dynamic_variables: {
+      ...customerData,
     },
     conversation_config_override: {
       agent: {
@@ -20,24 +33,18 @@ fastify.post("/get-personal", async (request, reply) => {
           prompt:
             "The customer's bank account balance is $100. They are based in San Francisco.",
         },
-        first_message: "Hi, how can I help you today?",
+        first_message: "Hi, {customer_name} how can I help you today?",
       },
     },
   };
 
-  // Send the response
-  return reply.send(responseData);
+	console.log("Respuesta enviada a ElevenLabs:", response);
+
+	// Envía la respuesta JSON
+	res.json(response);
 });
 
-// Start the server
-const start = async () => {
-  try {
-    await fastify.listen({ port: 3000 });
-    fastify.log.info(`Server listening on http://localhost:3000`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
-
-start();
+// Inicia el servidor
+app.listen(port, () => {
+	console.log(`Servidor webhook escuchando en http://localhost:${port}`);
+});
