@@ -12,7 +12,7 @@ app.post("/webhook", (req, res) => {
 	console.log("Datos recibidos de Twilio:", req.body);
 
 	// Extrae los datos de la llamada
-	const { caller_id, agent_id, called_number, call_sid } = req.body;
+	const { caller_id, agent_id, called_number, call_sid , caller_name } = req.body;
 
 	// Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
 	const customerData = {
@@ -20,6 +20,7 @@ app.post("/webhook", (req, res) => {
     called_number: called_number,
     last_interaction: "2024-01-15",
     caller_id: caller_id,
+    caller_name: caller_name,
   };
 
 	// Prepara la respuesta para ElevenLabs
