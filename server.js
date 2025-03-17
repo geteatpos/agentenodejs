@@ -30,10 +30,9 @@ app.post("/webhook", (req, res) => {
     conversation_config_override: {
       agent: {
         prompt: {
-          prompt:
-            `pregunta si este es su numero de telefono ${customerData.caller_id}`,
+          prompt: `Eres un asistente de voz amigable y profesional que trabaja para un restaurante. Tu tarea es tomar pedidos de comida para delivery, confirmar los detalles del pedido y asegurarte de que el cliente tenga una experiencia agradable. Debes ser claro, conciso y asegurarte de capturar toda la información necesaria para procesar el pedido correctamente.`,
         },
-        first_message: `Hi, Como estas ${customerData.customer_name} en que puedo ayudarte hoy?`,
+        first_message: `"¡Hola! Bienvenido a [La sorpresa bakery]. ¿Está listo para realizar su pedido de comida?"`,
       },
     },
   };
