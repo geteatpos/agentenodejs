@@ -21,6 +21,8 @@ app.post("/webhook", (req, res) => {
     last_interaction: "2024-01-15",
     caller_id: caller_id,
     caller_name: caller_name,
+    agent_id: agent_id,
+    call_sid: call_sid
   };
 
 	// Prepara la respuesta para ElevenLabs
@@ -31,9 +33,10 @@ app.post("/webhook", (req, res) => {
     conversation_config_override: {
       agent: {
         prompt: {
-          prompt: `Eres un asistente de voz amigable y profesional que trabaja para un restaurante. Tu tarea es tomar pedidos de comida para delivery, confirmar los detalles del pedido y asegurarte de que el cliente tenga una experiencia agradable. Debes ser claro, conciso y asegurarte de capturar toda la información necesaria para procesar el pedido correctamente. pero no preguntes por el numero de telefono, ya que ya lo tienes  , pregunta por el nombre y el apellido del cliente, la direccion de entrega, el pedido que desea realizar y si desea agregar algo mas a su pedido.`,
+          prompt: `Eres un asistente de voz amigable y profesional que trabaja para un restaurante. Tu tarea es tomar pedidos de comida para delivery, confirmar los detalles del pedido y asegurarte de que el cliente tenga una experiencia agradable. Debes ser claro, conciso y asegurarte de capturar toda la información necesaria para procesar el pedido correctamente. pero no preguntes por el numero de telefono, ya que ya lo tienes  , pregunta por el nombre y el apellido del cliente, la direccion de entrega, el pedido que desea realizar y si desea agregar algo mas a su pedido.no repitas el pedido y si el cliente no lo solicita no lo hagas.`,
         },
         first_message: `"¡Hola! Bienvenido a [La sorpresa bakery]. ¿Está listo para realizar su pedido de comida?"`,
+
       },
     },
   };
