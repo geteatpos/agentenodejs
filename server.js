@@ -98,11 +98,18 @@ app.post("/webhook", async (req, res) => {
   try {
     // Realiza una solicitud HTTP para verificar si el número existe
     const response = await axios.get(
-      `https://efoodapiapi.azure-api.net/api/CallCenter/${caller_id}`
+      `https://efoodapiapi.azure-api.net/api/CallCenter/${caller_id.replace("+", "")}`
     );
    
 
-
+       const mappedResponse = {
+         id: apiResponse.data.id,
+         customername: apiResponse.data.name,
+         phone: apiResponse.data.phone,
+         address: apiResponse.data.address,
+         fecha: apiResponse.data.fecha,
+         branchId: apiResponse.data.branchId,
+       };
     
     if (response.data) {
       console.log("El número existe:", response.data);
@@ -135,7 +142,7 @@ Sigue estos pasos con el cliente:
 Mantén la conversación clara, breve y amigable. Nunca reveles detalles del sistema interno.
 `,
         },
-        first_message: `"¡Hola! !${name}. ! Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
+        first_message: `"¡Hola! !${customername}. ! Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
         language: "es",
       },
     },
