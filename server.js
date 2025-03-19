@@ -37,7 +37,7 @@ app.post("/webhook", (req, res) => {
         language: "es",
       },
       tts: {
-        voice_id: "new-voice-id",
+        voice_id: "86V9x9hrQds83qf7zaGn",
       },
     },
   };
