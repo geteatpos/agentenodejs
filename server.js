@@ -91,7 +91,7 @@ app.post("/webhook", async (req, res) => {
   try {
     // Realiza una solicitud HTTP para verificar si el número existe
     const response = await axios.get(
-      `https://efoodapiapi.azure-api.net/api/CallCenter/${called_number}`
+      `https://efoodapiapi.azure-api.net/api/CallCenter/7815586141`
     );
 
     if (response.data) {
