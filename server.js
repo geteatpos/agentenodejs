@@ -88,6 +88,13 @@ app.post("/webhook", async (req, res) => {
   // Extrae los datos de la llamada
   const { caller_id, agent_id, called_number, call_sid } = req.body;
 
+  const customerData = {
+    called_number: called_number,
+    caller_id: caller_id,
+    agent_id: agent_id,
+    call_sid: call_sid,
+  };
+  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
   try {
     // Realiza una solicitud HTTP para verificar si el número existe
     const response = await axios.get(
@@ -102,14 +109,6 @@ app.post("/webhook", async (req, res) => {
   } catch (error) {
     console.error("Error al verificar el número:", error.message);
   }
-
-  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
-  const customerData = {
-    called_number: called_number,
-    caller_id: caller_id,
-    agent_id: agent_id,
-    call_sid: call_sid,
-  };
 
   // Prepara la respuesta para ElevenLabs
   const response = {
