@@ -12,14 +12,13 @@ app.post("/webhook", (req, res) => {
   console.log("Datos recibidos de Twilio:", req.body);
 
   // Extrae los datos de la llamada
-  const { caller_id, agent_id, called_number, call_sid, caller_name } =
+  const { caller_id, agent_id, called_number, call_sid,  } =
     req.body;
 
   // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
   const customerData = {
     called_number: called_number,
     caller_id: caller_id,
-    caller_name: caller_name,
     agent_id: agent_id,
     call_sid: call_sid,
   };
@@ -37,9 +36,7 @@ app.post("/webhook", (req, res) => {
         first_message: `"¡Hola! Bienvenido a [La sorpresa bakery]. ¿Está listo para realizar su pedido de comida?"`,
         language: "es",
       },
-      tts: {
-        voice_id: "86V9x9hrQds83qf7zaGn",
-      },
+
     },
   };
 
