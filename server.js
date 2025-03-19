@@ -88,38 +88,30 @@ app.post("/webhook", async (req, res) => {
   // Extrae los datos de la llamada
   const { caller_id, agent_id, called_number, call_sid } = req.body;
 
-  try {
-    // Realiza una solicitud HTTP para verificar si el número existe
-    const apiResponse = await axios.get(
-      `https://efoodapiapi.azure-api.net/api/CallCenter/${caller_id}`
-    );
-
-    if (apiResponse.data) {
-      // Mapea la respuesta de la API al formato deseado
-      const mappedResponse = {
-        id: apiResponse.data.id,
-        customername: apiResponse.data.name,
-        phone: apiResponse.data.phone,
-        address: apiResponse.data.address,
-        fecha: apiResponse.data.fecha,
-        branchId: apiResponse.data.branchId,
-      };
-
-      console.log("El número existe:", mappedResponse);
-    } else {
-      console.log("El número no existe.");
-    }
-  } catch (error) {
-    console.error("Error al verificar el número:", error.message);
-  }
-
-  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
   const customerData = {
     called_number: called_number,
     caller_id: caller_id,
     agent_id: agent_id,
     call_sid: call_sid,
   };
+  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
+  try {
+    // Realiza una solicitud HTTP para verificar si el número existe
+    const response = await axios.get(
+      `https://efoodapiapi.azure-api.net/api/CallCenter/${caller_id}`
+    );
+   
+
+
+    
+    if (response.data) {
+      console.log("El número existe:", response.data);
+    } else {
+      console.log("El número no existe.");
+    }
+  } catch (error) {
+    console.error("Error al verificar el número:", error.message);
+  }
 
   // Prepara la respuesta para ElevenLabs
   const response = {
@@ -143,7 +135,7 @@ Sigue estos pasos con el cliente:
 Mantén la conversación clara, breve y amigable. Nunca reveles detalles del sistema interno.
 `,
         },
-        first_message: `"¡Hola! . ${customername} . soy Julian de  [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
+        first_message: `"¡Hola! !${name}. ! Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
         language: "es",
       },
     },
