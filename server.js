@@ -7,31 +7,16 @@ const port = 3000;
 // Middleware para parsear JSON
 app.use(bodyParser.json());
 
-// Endpoint del webhook
-app.post("/webhook", (req, res) => {
-	console.log("Datos recibidos de Twilio:", req.body);
-
-	// Extrae los datos de la llamada
-	const { caller_id, agent_id, called_number, call_sid , caller_name } = req.body;
-
-	// Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
-	const customerData = {
-    called_number: called_number,
-    caller_id: caller_id,
-    caller_name: caller_name,
-    agent_id: agent_id,
-    call_sid: call_sid
-  };
-
-	// Prepara la respuesta para ElevenLabs
-	const response = {
+// Función para generar la respuesta de ElevenLabs
+const generateResponse = (customerData) => {
+  return {
     dynamic_variables: {
       ...customerData,
     },
     conversation_config_override: {
       agent: {
         prompt: {
-          prompt: `Eres un asistente de voz amigable y profesional que trabaja para un restaurante. Tu tarea es tomar pedidos de comida para delivery, confirmar los detalles del pedido y asegurarte de que el cliente tenga una experiencia agradable. Debes ser claro, conciso y asegurarte de capturar toda la información necesaria para procesar el pedido correctamente. pero no preguntes por el numero de telefono, ya que ya lo tienes  , pregunta por el nombre y el apellido del cliente, la direccion de entrega, el pedido que desea realizar y si desea agregar algo mas a su pedido.no repitas el pedido y si el cliente no lo solicita no lo hagas.`,
+          prompt: `Eres un asistente de voz amigable y profesional que trabaja para un restaurante. Tu tarea es tomar pedidos de comida para delivery, confirmar los detalles del pedido y asegurarte de que el cliente tenga una experiencia agradable. Debes ser claro, conciso y asegurarte de capturar toda la información necesaria para procesar el pedido correctamente. No preguntes por el número de teléfono, ya que ya lo tienes. Pregunta por el nombre y apellido del cliente, la dirección de entrega, el pedido que desea realizar y si desea agregar algo más a su pedido. No repitas el pedido y si el cliente no lo solicita no lo hagas.`,
         },
         first_message: `"¡Hola! Bienvenido a [La sorpresa bakery]. ¿Está listo para realizar su pedido de comida?"`,
         language: "es",
@@ -41,14 +26,42 @@ app.post("/webhook", (req, res) => {
       },
     },
   };
+};
 
-	console.log("Respuesta enviada a ElevenLabs:", response);
+// Endpoint del webhook
+app.post("/webhook", (req, res) => {
+  console.log("Datos recibidos de Twilio:", req.body);
 
-	// Envía la respuesta JSON
-	res.json(response);
+  // Verificar que los datos esenciales están presentes en el cuerpo de la solicitud
+  const { caller_id, agent_id, called_number, call_sid, caller_name } =
+    req.body;
+
+  if (!caller_id || !agent_id || !called_number || !call_sid || !caller_name) {
+    console.error("Datos faltantes en la solicitud");
+    return res
+      .status(400)
+      .json({ error: "Faltan datos necesarios en la solicitud" });
+  }
+
+  // Simula la obtención de datos del cliente
+  const customerData = {
+    called_number,
+    caller_id,
+    caller_name,
+    agent_id,
+    call_sid,
+  };
+
+  // Prepara la respuesta para ElevenLabs
+  const response = generateResponse(customerData);
+
+  console.log("Respuesta enviada a ElevenLabs:", response);
+
+  // Envía la respuesta JSON
+  res.json(response);
 });
 
 // Inicia el servidor
 app.listen(port, () => {
-	console.log(`Servidor webhook escuchando en http://localhost:${port}`);
+  console.log(`Servidor webhook escuchando en http://localhost:${port}`);
 });
