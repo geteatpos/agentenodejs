@@ -10,7 +10,14 @@ const port = 3000;
 app.use(bodyParser.json());
 
 // Cargar el prompt desde el archivo JSON
-const promptConfig = JSON.parse(fs.readFileSync("promptConfig.json", "utf-8"));
+let promptConfig;
+try {
+  promptConfig = JSON.parse(fs.readFileSync("promptConfig.json", "utf-8"));
+  console.log("Prompt cargado correctamente.");
+} catch (error) {
+  console.error("Error al cargar el archivo promptConfig.json:", error.message);
+  process.exit(1); // Detiene la ejecución si no se puede cargar el archivo
+}
 
 // Endpoint del webhook
 app.post("/webhook", async (req, res) => {
@@ -19,7 +26,14 @@ app.post("/webhook", async (req, res) => {
   // Extrae los datos de la llamada
   const { caller_id, agent_id, called_number, call_sid } = req.body;
 
-  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
+  // Valida que los datos necesarios estén presentes
+  if (!caller_id || !agent_id || !called_number || !call_sid) {
+    return res
+      .status(400)
+      .json({ message: "Datos incompletos en la solicitud." });
+  }
+
+  // Simula la obtención de datos del cliente
   const customerData = {
     called_number: called_number,
     caller_id: caller_id,
