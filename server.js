@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 // Cargar el prompt desde el archivo JSON
 let promptConfig;
 try {
-  promptConfig = JSON.parse(fs.readFileSync("promptConfig.json", "utf-8"));
+  promptConfig = JSON.parse(fs.readFileSync("promptConfig.ts", "utf-8"));
   console.log("Prompt cargado correctamente.");
 } catch (error) {
   console.error("Error al cargar el archivo promptConfig.json:", error.message);
