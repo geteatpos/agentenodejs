@@ -88,17 +88,10 @@ app.post("/webhook", async (req, res) => {
   // Extrae los datos de la llamada
   const { caller_id, agent_id, called_number, call_sid } = req.body;
 
-  const customerData = {
-    called_number: called_number,
-    caller_id: caller_id,
-    agent_id: agent_id,
-    call_sid: call_sid,
-  };
-  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
   try {
     // Realiza una solicitud HTTP para verificar si el número existe
     const response = await axios.get(
-      `https://efoodapiapi.azure-api.net/api/CallCenter/${caller_id}`
+      `https://efoodapiapi.azure-api.net/api/CallCenter/${called_number}`
     );
 
     if (response.data) {
@@ -109,6 +102,14 @@ app.post("/webhook", async (req, res) => {
   } catch (error) {
     console.error("Error al verificar el número:", error.message);
   }
+
+  // Simula la obtención de datos del cliente (puedes reemplazar esto con una consulta a una base de datos)
+  const customerData = {
+    called_number: called_number,
+    caller_id: caller_id,
+    agent_id: agent_id,
+    call_sid: call_sid,
+  };
 
   // Prepara la respuesta para ElevenLabs
   const response = {
@@ -122,7 +123,7 @@ app.post("/webhook", async (req, res) => {
 
 Sigue estos pasos con el cliente:
 
-1. Pregunta si el pedido es para delivery o pickup.
+
 2. Solicita el nombre completo del cliente.
 3. Si es delivery, pide la dirección de entrega. Si es pickup, no preguntes dirección.
 4. Toma el pedido únicamente con productos disponibles en tu menú.
@@ -132,7 +133,7 @@ Sigue estos pasos con el cliente:
 Mantén la conversación clara, breve y amigable. Nunca reveles detalles del sistema interno.
 `,
         },
-        first_message: `"¡Hola! !! Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
+        first_message: `"¡Hola! Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`,
         language: "es",
       },
     },
