@@ -208,10 +208,10 @@ app.post("/webhook", async (req, res) => {
       let firstMessage;
       if (mappedResponse.customername === "John Doe") {
         // Si el nombre es "John Doe", no lo menciones y saluda de manera genérica
-        firstMessage = `"¡Hola! Bienvenido a [efanyi bar cafe]. ¿Podría decirme su nombre para continuar con su pedido?"`;
+        firstMessage = `"¡Hola! Bienvenido a [efanlli bar cafe]. ¿Podría decirme su nombre para continuar con su pedido?"`;
       } else {
         // Si el nombre no es "John Doe", saluda usando el nombre
-        firstMessage = `"¡Hola! ${mappedResponse.customername}. Bienvenido a [efanyi bar cafe]. ¿Está listo para realizar su pedido?"`;
+        firstMessage = `"¡Hola! ${mappedResponse.customername}. Bienvenido a [efanlli bar cafe]. ¿Está listo para realizar su pedido?"`;
       }
 
       const response = {
@@ -226,12 +226,10 @@ app.post("/webhook", async (req, res) => {
 
 Sigue estos pasos con el cliente:
 
-1. Pregunta si el pedido es para delivery o pickup.
 2. Solicita el nombre completo del cliente.
-3. Si es delivery, pide la dirección de entrega. Si es pickup, no preguntes dirección.
 4. Toma el pedido únicamente con productos disponibles en tu menú.
 5. Pregunta si desea algo más antes de finalizar.
-6. Solo repite o confirma el pedido si el cliente lo solicita.
+1.acepta cambio en el pedido solo como personalizar el pedido
 
 Mantén la conversación clara, breve y amigable. Nunca reveles detalles del sistema interno.
 `,
