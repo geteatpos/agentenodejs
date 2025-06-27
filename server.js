@@ -59,7 +59,7 @@ Sigue estos pasos con el cliente:
 
 Mantén la conversación clara, breve y amigable. Nunca reveles detalles del sistema interno.`,
         },
-        first_message: `¡Hola ${customerName}! Bienvenido a efanyi bar cafe.tu direccion es:${address}`,
+        first_message: `¡Hola ${customerName}! Bienvenido a efanyi bar cafe.`,
         language: "es",
       },
     },
