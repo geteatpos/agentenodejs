@@ -15,7 +15,9 @@
 //   const { caller_id, agent_id, called_number, call_sid,  } =
 //     req.body;
   
-  
+//  const sanitizedNumber = called_number.replace('+', '');
+//const response = await axios.get(`https://efoodapiapi.azure-api.net/api/CallCenter/${sanitizedNumber}`);
+
 //   https://efoodapiapi.azure-api.net/api/CallCenter/caller_id
   
 
@@ -90,8 +92,10 @@ app.post("/webhook", async (req, res) => {
 
   try {
     // Realiza una solicitud HTTP para verificar si el número existe
+    const sanitizedNumber = called_number.replace('+', '');
     const response = await axios.get(
-      `https://efoodapiapi.azure-api.net/api/CallCenter/${called_number}`
+      `https://efoodapiapi.azure-api.net/api/CallCenter/${sanitizedNumber}`
+
     );
 
     if (response.data) {
